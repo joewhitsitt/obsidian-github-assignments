@@ -30,8 +30,8 @@ Lightweight Obsidian plugin to append assigned GitHub issues and pull requests t
 ## Usage
 
 1. Open any note in Obsidian
-2. Run the "Fetch assignments" command
-3. Assigned GitHub issues and pull requests will be appended as checkbox items
+3. Run the "Fetch GitHub assignments" command
+4. Assigned Github issues and pull requests will be appended as checkbox items
 
 ## Example Output
 
@@ -40,18 +40,9 @@ Lightweight Obsidian plugin to append assigned GitHub issues and pull requests t
 - [ ] Review [owner/repo#456](https://github.com/owner/repo/pull/456) Add new feature
 ```
 
-## Compatibility
-
-Works with:
-- [Obsidian Rollover Daily Todos](https://github.com/lumoe/obsidian-rollover-daily-todos)
-- [Obsidian Tasks](https://github.com/obsidian-tasks-group/obsidian-tasks)
-- Any daily note or task management system
-
 ## Development
 
 ```bash
 npm install
 npm run build
 ```
-
-Releases are automatically built and published via GitHub Actions.

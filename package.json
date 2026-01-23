@@ -1,7 +1,7 @@
 {
 	"name": "obsidian-github-assignments",
 	"version": "1.0.0",
-	"description": "This is a sample plugin for Obsidian (https://obsidian.md)",
+	"description": "Lightweight plugin to append assigned GitHub issues and pull requests to your note.",
 	"main": "main.js",
 	"type": "module",
 	"scripts": {
