@@ -19,7 +19,7 @@ interface GitHubItem {
 export default class GitHubAssignmentsPlugin extends Plugin {
   settings: GitHubAssignmentsSettings;
 
-  onload() {
+  async onload() {
     this.settings = Object.assign(
       DEFAULT_SETTINGS,
       await this.loadData()
