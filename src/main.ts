@@ -101,9 +101,19 @@ export default class GitHubAssignmentsPlugin extends Plugin {
 
     const json = JSON.parse(response.text) as GraphQLResponse;
 
-    if (json.errors && json.errors.length > 0) {
-      throw new Error(`GraphQL error: ${json.errors[0].message}`);
+    if (Array.isArray(json.errors) && json.errors.length > 0) {
+      const firstError = json.errors[0];
+
+      if (
+        firstError &&
+        typeof firstError === "object" &&
+        "message" in firstError &&
+        typeof (firstError as { message: unknown }).message === "string"
+      ) {
+        throw new Error(`GraphQL error: ${(firstError as { message: string }).message}`);
+      }
     }
+
 
     return json.data?.search.nodes ?? [];
   }
