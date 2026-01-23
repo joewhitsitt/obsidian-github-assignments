@@ -16,11 +16,21 @@ interface GitHubItem {
   };
 }
 
+interface GraphQLResponse {
+  data?: {
+    search: {
+      nodes: GitHubItem[];
+    };
+  };
+  errors?: Array<{ message: string }>;
+}
+
 export default class GitHubAssignmentsPlugin extends Plugin {
   settings: GitHubAssignmentsSettings;
 
   async onload() {
-    this.settings = { ...DEFAULT_SETTINGS, ...(await this.loadData()) };
+    const data = await this.loadData() as Partial<GitHubAssignmentsSettings>;
+    this.settings = { ...DEFAULT_SETTINGS, ...data };
 
     this.addSettingTab(new GitHubAssignmentsSettingTab(this.app, this));
 
@@ -89,13 +99,13 @@ export default class GitHubAssignmentsPlugin extends Plugin {
       body: JSON.stringify({ query }),
     });
 
-    const json = JSON.parse(response.text);
+    const json = JSON.parse(response.text) as GraphQLResponse;
 
-    if (json.errors) {
+    if (json.errors && json.errors.length > 0) {
       throw new Error(`GraphQL error: ${json.errors[0].message}`);
     }
 
-    return json.data?.search.nodes || [];
+    return json.data?.search.nodes ?? [];
   }
 
   buildTask(item: GitHubItem): string {

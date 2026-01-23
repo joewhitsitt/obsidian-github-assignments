@@ -18,7 +18,6 @@ export class GitHubAssignmentsSettingTab extends PluginSettingTab {
       .setDesc("Create a personal access token at https://github.com/settings/tokens")
       .addText((text) =>
         text
-          .setPlaceholder("ghp_...")
           .setValue(this.plugin.settings.githubToken)
           .onChange(async (value) => {
             this.plugin.settings.githubToken = value;
@@ -31,7 +30,6 @@ export class GitHubAssignmentsSettingTab extends PluginSettingTab {
       .setDesc("Your GitHub username")
       .addText((text) =>
         text
-          .setPlaceholder("octocat")
           .setValue(this.plugin.settings.username)
           .onChange(async (value) => {
             this.plugin.settings.username = value;
@@ -40,8 +38,8 @@ export class GitHubAssignmentsSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Issue Verb")
-      .setDesc("Prefix for GitHub issues (e.g., 'Work on', 'Fix', 'Implement')")
+      .setName("Issue verb")
+      .setDesc("Prefix for issues. (e.g., 'work on', 'fix', 'implement').")
       .addText((text) =>
         text
           .setPlaceholder("Work on")
@@ -53,8 +51,8 @@ export class GitHubAssignmentsSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Pull Request Verb")
-      .setDesc("Prefix for GitHub pull requests (e.g., 'Review', 'Merge', 'Check')")
+      .setName("Pull request verb")
+      .setDesc("Prefix for pull requests (e.g., 'review', 'merge', 'check')")
       .addText((text) =>
         text
           .setPlaceholder("Review")
@@ -66,7 +64,7 @@ export class GitHubAssignmentsSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Task Suffix")
+      .setName("Task suffix")
       .setDesc("Optional text to append to each task (e.g., 'due:: tomorrow' or '#urgent')")
       .addText((text) =>
         text
