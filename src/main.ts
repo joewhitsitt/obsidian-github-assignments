@@ -1,4 +1,4 @@
-import { Plugin, TFile, Notice } from "obsidian";
+import { Plugin, TFile, Notice, requestUrl } from "obsidian";
 import {
   GitHubAssignmentsSettings,
   DEFAULT_SETTINGS,
@@ -20,10 +20,7 @@ export default class GitHubAssignmentsPlugin extends Plugin {
   settings: GitHubAssignmentsSettings;
 
   async onload() {
-    this.settings = Object.assign(
-      DEFAULT_SETTINGS,
-      await this.loadData()
-    );
+    this.settings = { ...DEFAULT_SETTINGS, ...(await this.loadData()) };
 
     this.addSettingTab(new GitHubAssignmentsSettingTab(this.app, this));
 
@@ -82,7 +79,8 @@ export default class GitHubAssignmentsPlugin extends Plugin {
       }
     `;
 
-    const resp = await fetch("https://api.github.com/graphql", {
+    const response = await requestUrl({
+      url: "https://api.github.com/graphql",
       method: "POST",
       headers: {
         Authorization: `Bearer ${this.settings.githubToken}`,
@@ -91,13 +89,13 @@ export default class GitHubAssignmentsPlugin extends Plugin {
       body: JSON.stringify({ query }),
     });
 
-    const json = await resp.json();
+    const json = JSON.parse(response.text);
 
     if (json.errors) {
       throw new Error(`GraphQL error: ${json.errors[0].message}`);
     }
 
-    return json.data.search.nodes || [];
+    return json.data?.search.nodes || [];
   }
 
   buildTask(item: GitHubItem): string {

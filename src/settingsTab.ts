@@ -14,7 +14,7 @@ export class GitHubAssignmentsSettingTab extends PluginSettingTab {
     containerEl.empty();
 
     new Setting(containerEl)
-      .setName("GitHub Token")
+      .setName("GitHub token")
       .setDesc("Create a personal access token at https://github.com/settings/tokens")
       .addText((text) =>
         text
@@ -27,7 +27,7 @@ export class GitHubAssignmentsSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("GitHub Username")
+      .setName("GitHub username")
       .setDesc("Your GitHub username")
       .addText((text) =>
         text
