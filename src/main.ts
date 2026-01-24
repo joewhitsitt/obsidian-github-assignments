@@ -35,7 +35,7 @@ export default class GitHubAssignmentsPlugin extends Plugin {
     this.addSettingTab(new GitHubAssignmentsSettingTab(this.app, this));
 
     this.addCommand({
-      id: "fetch-github-assignments",
+      id: "fetch-assignments",
       name: "Fetch assignments",
       callback: () => this.sync(),
     });
