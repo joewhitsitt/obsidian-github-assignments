@@ -1,6 +1,6 @@
 # GitHub Assignments
 
-Lightweight Obsidian plugin to append assigned GitHub issues and pull requests to your current note.
+Lightweight plugin to append assigned GitHub issues and pull requests to your note.
 
 ## Features
 
