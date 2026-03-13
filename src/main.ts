@@ -123,8 +123,14 @@ export default class GitHubAssignmentsPlugin extends Plugin {
     const verb = isPR ? this.settings.pullRequestVerb : this.settings.issueVerb;
     const repo = item.repository.nameWithOwner;
     const suffix = this.settings.taskSuffix ? ` ${this.settings.taskSuffix}` : "";
+    let taskLine = `- [ ] ${verb} [${repo}#${item.number}](${item.url}) ${item.title}${suffix}`;
 
-    return `- [ ] ${verb} [${repo}#${item.number}](${item.url}) ${item.title}${suffix}`;
+    const today = window.moment().format('YYYY-MM-DD');
+
+    if (this.settings.addCreatedDate) {
+      taskLine += ` [created:: ${today}]`;
+    }
+    return taskLine;
   }
 
   async insertTasks(file: TFile, items: GitHubItem[]) {
@@ -145,8 +151,10 @@ export default class GitHubAssignmentsPlugin extends Plugin {
     }
 
     // Append new tasks to the end of the file.
+    // If the file already ends with a newline, insert there instead of adding a blank gap.
     if (newTasks.length > 0) {
-      const newContent = content + "\n" + newTasks.join("\n");
+      const separator = content.endsWith("\n") ? "" : "\n";
+      const newContent = content + separator + newTasks.join("\n");
       await this.app.vault.modify(file, newContent);
     }
   }

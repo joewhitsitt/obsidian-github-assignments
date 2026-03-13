@@ -4,6 +4,7 @@ export interface GitHubAssignmentsSettings {
   issueVerb: string;
   pullRequestVerb: string;
   taskSuffix: string;
+  addCreatedDate: boolean;
 }
 
 export const DEFAULT_SETTINGS: GitHubAssignmentsSettings = {
@@ -12,4 +13,5 @@ export const DEFAULT_SETTINGS: GitHubAssignmentsSettings = {
   issueVerb: "Work on",
   pullRequestVerb: "Review",
   taskSuffix: "",
+  addCreatedDate: false,
 };

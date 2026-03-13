@@ -18,6 +18,7 @@ export class GitHubAssignmentsSettingTab extends PluginSettingTab {
       .setDesc("Create a personal access token at https://github.com/settings/tokens")
       .addText((text) =>
         text
+          .setPlaceholder("Ghp_...")
           .setValue(this.plugin.settings.githubToken)
           .onChange(async (value) => {
             this.plugin.settings.githubToken = value;
@@ -30,6 +31,7 @@ export class GitHubAssignmentsSettingTab extends PluginSettingTab {
       .setDesc("Your GitHub username")
       .addText((text) =>
         text
+          .setPlaceholder("Octocat")
           .setValue(this.plugin.settings.username)
           .onChange(async (value) => {
             this.plugin.settings.username = value;
@@ -39,7 +41,7 @@ export class GitHubAssignmentsSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName("Issue verb")
-      .setDesc("Prefix for issues. (e.g., 'work on', 'fix', 'implement').")
+      .setDesc("Prefix for GitHub issues (e.g., 'work on', 'fix', 'implement')")
       .addText((text) =>
         text
           .setPlaceholder("Work on")
@@ -52,7 +54,7 @@ export class GitHubAssignmentsSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName("Pull request verb")
-      .setDesc("Prefix for pull requests (e.g., 'review', 'merge', 'check')")
+      .setDesc("Prefix for GitHub pull requests (e.g., 'review', 'merge', 'check')")
       .addText((text) =>
         text
           .setPlaceholder("Review")
@@ -75,5 +77,15 @@ export class GitHubAssignmentsSettingTab extends PluginSettingTab {
             await this.plugin.saveData(this.plugin.settings);
           })
       );
+
+    new Setting(containerEl)
+    .setName('Add created date')
+    .setDesc('Add [created:: YYYY-MM-DD] to tasks for use with the `Tasks` plugin')
+    .addToggle(toggle => toggle
+        .setValue(this.plugin.settings.addCreatedDate)
+        .onChange(async (value) => {
+            this.plugin.settings.addCreatedDate = value;
+            await this.plugin.saveData(this.plugin.settings);
+        }));
   }
 }
