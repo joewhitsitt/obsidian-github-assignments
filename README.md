@@ -8,6 +8,8 @@ Lightweight plugin to append assigned GitHub issues and pull requests to your no
 - Avoids duplication within the note.
 - Optional prefixes for issues ("Work on") and pull requests ("Review")
 - Optional suffix for issues and pull requests.
+- Optional created date tag (`[created:: YYYY-MM-DD]`) for use with the Tasks plugin.
+- Inserts tasks at the cursor position if the file ends with a blank line, avoiding gaps in ordered lists.
 - Works with any note structure (daily notes, project notes, etc.)
 
 ## Installation
@@ -26,6 +28,7 @@ Lightweight plugin to append assigned GitHub issues and pull requests to your no
 - **Issue Verb**: Text prefix for issues (default: "Work on")
 - **Pull Request Verb**: Text prefix for PRs (default: "Review")
 - **Task Suffix**: Append custom text to each task (e.g., `due:: today` for Tasks plugin, or `#urgent`)
+- **Add Created Date**: Toggle to append `[created:: YYYY-MM-DD]` to each task for use with the [Tasks plugin](https://github.com/obsidian-tasks-group/obsidian-tasks)
 
 ## Usage
 
@@ -36,7 +39,7 @@ Lightweight plugin to append assigned GitHub issues and pull requests to your no
 ## Example Output
 
 ```markdown
-- [ ] Work on [owner/repo#123](https://github.com/owner/repo/issues/123) Fix the bug due:: today
+- [ ] Work on [owner/repo#123](https://github.com/owner/repo/issues/123) Fix the bug due:: today [created:: 2026-03-13]
 - [ ] Review [owner/repo#456](https://github.com/owner/repo/pull/456) Add new feature
 ```
 
