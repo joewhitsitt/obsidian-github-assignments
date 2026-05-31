@@ -82,7 +82,7 @@ export class GitHubAssignmentsSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName('Add created date')
-      .setDesc('Append [created:: YYYY-MM-DD] to each task')
+      .setDesc('Append a created date with the date to each task')
       .addToggle(toggle => toggle
         .setValue(this.plugin.settings.addCreatedDate)
         .onChange(async (value) => {
@@ -102,7 +102,7 @@ export class GitHubAssignmentsSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName("Include labels")
-      .setDesc("Append GitHub issue/PR labels as tags to each task")
+      .setDesc("Append GitHub issues and pull request labels as tags to each task")
       .addToggle(toggle => toggle
         .setValue(this.plugin.settings.includeLabels)
         .onChange(async (value) => {
@@ -127,7 +127,7 @@ export class GitHubAssignmentsSettingTab extends PluginSettingTab {
     new Setting(containerEl).setName('Workflows & filtering').setHeading();
 
     new Setting(containerEl)
-      .setName('Include review-requested PRs')
+      .setName('Include review-requested pull requests')
       .setDesc('Include pull requests where you are listed as a reviewer')
       .addToggle(toggle => toggle
         .setValue(this.plugin.settings.includeReviewRequested)
@@ -181,7 +181,7 @@ export class GitHubAssignmentsSettingTab extends PluginSettingTab {
       .setDesc('Only include items from these repos (comma-separated `owner/repo`). Leave empty to include all.')
       .addText((text) =>
         text
-          .setPlaceholder("owner/repo1, owner/repo2 — empty = all")
+          .setPlaceholder("Owner/repo1, owner/repo2 — empty = all")
           .setValue(this.plugin.settings.includeRepos)
           .onChange(async (value) => {
             this.plugin.settings.includeRepos = value;

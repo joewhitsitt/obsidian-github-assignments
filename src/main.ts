@@ -183,9 +183,9 @@ export default class GitHubAssignmentsPlugin extends Plugin {
     const checkbox = this.settings.inProgressCheckbox ? "- [/]" : "- [ ]";
     let taskLine = `${checkbox} ${verb} [${repo}#${item.number}](${item.url}) ${item.title}${suffix}`;
 
-    if (this.settings.includeLabels && (item as any).labels?.nodes?.length) {
+    if (this.settings.includeLabels && item.labels?.nodes?.length) {
       const prefix = this.settings.labelPrefix;
-      const labelStr = (item as any).labels.nodes.map((l: {name: string}) => `${prefix}${l.name}`).join(" ");
+      const labelStr = item.labels.nodes.map((l: GitHubLabel) => `${prefix}${l.name}`).join(" ");
       taskLine += ` ${labelStr}`;
     }
 
