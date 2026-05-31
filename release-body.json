@@ -1,0 +1,8 @@
+{
+    "tag_name": "v1.1.0",
+    "target_commitish": "main",
+    "name": "v1.1.0",
+    "body": "### What's new\n\n- **Settings reorganization**: Settings tab organized into logical sections (GitHub, Output, Tasks, Filter)\n- **In-progress checkbox**: New toggle to filter tasks by in-progress state — only items with a checkbox in their title are included\n- **Validation guard**: Graceful handling when no GitHub username is configured\n- **Test suite**: 20 passing tests with vitest, Obsidian API mock helpers\n\n### Changes\n- `settingsTab.ts` — complete layout restructure into collapsible sections\n- `settings.ts` — added `inProgressCheckbox` property\n- `main.ts` — empty-username guard in sync(), filter respects inProgressCheckbox\n- `__tests__/` — vitest suite with smoke tests and Obsidian mock",
+    "draft": false,
+    "prerelease": false
+}
