@@ -5,6 +5,10 @@ import {
 } from "./settings";
 import { GitHubAssignmentsSettingTab } from "./settingsTab";
 
+interface GitHubLabel {
+  name: string;
+}
+
 interface GitHubItem {
   id: string;
   number: number;
@@ -14,6 +18,7 @@ interface GitHubItem {
   repository: {
     nameWithOwner: string;
   };
+  labels?: { nodes: GitHubLabel[] };
 }
 
 interface GraphQLResponse {
@@ -64,9 +69,35 @@ export default class GitHubAssignmentsPlugin extends Plugin {
   }
 
   async fetchAssignments(): Promise<GitHubItem[]> {
-    const query = `
+    const queries: string[] = [
+      `assignee:${this.settings.username} is:open`,
+    ];
+
+    if (this.settings.includeReviewRequested) {
+      queries.push("type:pr review-requested:@me");
+    }
+    if (this.settings.includeAuthored) {
+      queries.push("author:@me");
+    }
+    if (this.settings.includeMentioned) {
+      queries.push("mentions:@me");
+    }
+
+    const allItems: GitHubItem[] = [];
+
+    for (const q of queries) {
+      const items = await this.runSearchQuery(q);
+      allItems.push(...items);
+    }
+
+    const merged = this.mergeItems(allItems);
+    return this.filterItems(merged);
+  }
+
+  private async runSearchQuery(query: string): Promise<GitHubItem[]> {
+    const graphqlQuery = `
       query {
-        search(query: "assignee:${this.settings.username} is:open", type: ISSUE, first: 50) {
+        search(query: "${query}", type: ISSUE, first: 50) {
           nodes {
             ... on Issue {
               id
@@ -75,6 +106,9 @@ export default class GitHubAssignmentsPlugin extends Plugin {
               url
               __typename
               repository { nameWithOwner }
+              labels(first: 10) {
+                nodes { name }
+              }
             }
             ... on PullRequest {
               id
@@ -83,6 +117,9 @@ export default class GitHubAssignmentsPlugin extends Plugin {
               url
               __typename
               repository { nameWithOwner }
+              labels(first: 10) {
+                nodes { name }
+              }
             }
           }
         }
@@ -96,7 +133,7 @@ export default class GitHubAssignmentsPlugin extends Plugin {
         Authorization: `Bearer ${this.settings.githubToken}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ query }),
+      body: JSON.stringify({ query: graphqlQuery }),
     });
 
     const json = JSON.parse(response.text) as GraphQLResponse;
@@ -114,8 +151,28 @@ export default class GitHubAssignmentsPlugin extends Plugin {
       }
     }
 
-
     return json.data?.search.nodes ?? [];
+  }
+
+  mergeItems(items: GitHubItem[]): GitHubItem[] {
+    const seen = new Set<string>();
+    return items.filter((item) => {
+      if (seen.has(item.id)) return false;
+      seen.add(item.id);
+      return true;
+    });
+  }
+
+  filterItems(items: GitHubItem[]): GitHubItem[] {
+    return items.filter((item) => {
+      if (item.__typename === "Issue" && !this.settings.includeIssues) return false;
+      if (item.__typename === "PullRequest" && !this.settings.includePullRequests) return false;
+      if (this.settings.includeRepos.trim()) {
+        const allowedRepos = this.settings.includeRepos.split(",").map((r) => r.trim().toLowerCase());
+        if (!allowedRepos.includes(item.repository.nameWithOwner.toLowerCase())) return false;
+      }
+      return true;
+    });
   }
 
   buildTask(item: GitHubItem): string {
@@ -123,7 +180,14 @@ export default class GitHubAssignmentsPlugin extends Plugin {
     const verb = isPR ? this.settings.pullRequestVerb : this.settings.issueVerb;
     const repo = item.repository.nameWithOwner;
     const suffix = this.settings.taskSuffix ? ` ${this.settings.taskSuffix}` : "";
-    let taskLine = `- [ ] ${verb} [${repo}#${item.number}](${item.url}) ${item.title}${suffix}`;
+    const checkbox = this.settings.inProgressCheckbox ? "- [/]" : "- [ ]";
+    let taskLine = `${checkbox} ${verb} [${repo}#${item.number}](${item.url}) ${item.title}${suffix}`;
+
+    if (this.settings.includeLabels && (item as any).labels?.nodes?.length) {
+      const prefix = this.settings.labelPrefix;
+      const labelStr = (item as any).labels.nodes.map((l: {name: string}) => `${prefix}${l.name}`).join(" ");
+      taskLine += ` ${labelStr}`;
+    }
 
     const today = window.moment().format('YYYY-MM-DD');
 
