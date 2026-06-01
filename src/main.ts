@@ -31,7 +31,7 @@ interface GraphQLResponse {
 }
 
 export default class GitHubAssignmentsPlugin extends Plugin {
-  settings: GitHubAssignmentsSettings;
+  settings!: GitHubAssignmentsSettings;
 
   async onload() {
     const data = await this.loadData() as Partial<GitHubAssignmentsSettings>;
