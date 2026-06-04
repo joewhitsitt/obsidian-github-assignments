@@ -185,7 +185,10 @@ export default class GitHubAssignmentsPlugin extends Plugin {
 
     if (this.settings.includeLabels && item.labels?.nodes?.length) {
       const prefix = this.settings.labelPrefix;
-      const labelStr = item.labels.nodes.map((l: GitHubLabel) => `${prefix}${l.name}`).join(" ");
+      const labelStr = item.labels.nodes.map((l: GitHubLabel) => {
+        const sanitized = l.name.replace(/[^a-zA-Z0-9_-]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
+        return `${prefix}${sanitized}`;
+      }).join(" ");
       taskLine += ` ${labelStr}`;
     }
 

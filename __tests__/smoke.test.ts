@@ -227,6 +227,19 @@ describe("GitHubAssignmentsPlugin", () => {
       expect(result).toMatch(/@urgent/);
     });
 
+    it("sanitizes labels with spaces into valid Obsidian tags", () => {
+      plugin.settings.includeLabels = true;
+      plugin.settings.labelPrefix = "#";
+      const item = makeItem(
+        { __typename: "Issue" },
+        { nodes: [{ name: "bug fix" }, { name: "priority: high" }, { name: "good first issue" }] }
+      );
+      const result = plugin.buildTask(item);
+      expect(result).toMatch(/#bug-fix/);
+      expect(result).toMatch(/#priority-high/);
+      expect(result).toMatch(/#good-first-issue/);
+    });
+
     it("handles items with no labels gracefully", () => {
       plugin.settings.includeLabels = true;
       const item = makeItem({ __typename: "Issue" });
