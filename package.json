@@ -16,7 +16,7 @@
 	"license": "0-BSD",
 	"devDependencies": {
 		"@eslint/js": "10.0.1",
-		"@types/node": "^25.9.1",
+		"@types/node": "^25.9.3",
 		"@vitest/coverage-v8": "^4.1.7",
 		"esbuild": "0.28.0",
 		"eslint-plugin-obsidianmd": "0.3.0",
