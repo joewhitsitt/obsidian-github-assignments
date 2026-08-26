@@ -2,7 +2,7 @@
 	"id": "github-assignments",
 	"name": "GitHub Assignments",
 	"version": "1.2.0",
-	"minAppVersion": "0.15.0",
+	"minAppVersion": "1.13.0",
 	"description": "Lightweight plugin to append assigned GitHub issues and pull requests to your note.",
 	"author": "joewhitsitt",
 	"authorUrl": "https://github.com/joewhitsitt",
