@@ -43,6 +43,8 @@ jobs:
                   subject-name: manifest.json
 
             - name: Verify release asset attestations
+              env:
+                  GH_TOKEN: ${{ github.token }}
               run: |
                   gh attestation verify main.js --repo "${{ github.repository }}"
                   gh attestation verify manifest.json --repo "${{ github.repository }}"
