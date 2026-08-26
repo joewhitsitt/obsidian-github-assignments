@@ -30,7 +30,19 @@ jobs:
                   tag="${GITHUB_REF#refs/tags/}"
                   gh release upload "$tag" main.js manifest.json --clobber
 
-            - name: Attest release assets
+            - name: Attest main.js
+              uses: actions/attest-build-provenance@v1
+              with:
+                  subject-path: "${{ github.workspace }}/main.js"
+                  subject-name: main.js
+
+            - name: Attest manifest.json
+              uses: actions/attest-build-provenance@v1
+              with:
+                  subject-path: "${{ github.workspace }}/manifest.json"
+                  subject-name: manifest.json
+
+            - name: Verify release asset attestations
               run: |
-                  gh attestation create main.js manifest.json --predicate-type https://slsa.dev/provenance/v1 --signing-repo "${{ github.repository }}"
-                  gh attestation verify main.js manifest.json --repo "${{ github.repository }}" --format minimal
+                  gh attestation verify main.js --repo "${{ github.repository }}"
+                  gh attestation verify manifest.json --repo "${{ github.repository }}"
