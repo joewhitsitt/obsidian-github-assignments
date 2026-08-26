@@ -147,7 +147,7 @@ export default class GitHubAssignmentsPlugin extends Plugin {
         "message" in firstError &&
         typeof (firstError as { message: unknown }).message === "string"
       ) {
-        throw new Error(`GraphQL error: ${(firstError as { message: string }).message}`);
+        throw new Error(`GraphQL error: ${firstError.message}`);
       }
     }
 
