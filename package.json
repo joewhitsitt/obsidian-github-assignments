@@ -16,15 +16,15 @@
 	"license": "0-BSD",
 	"devDependencies": {
 		"@eslint/js": "10.0.1",
-		"@types/node": "^25.9.1",
-		"@vitest/coverage-v8": "^4.1.7",
-		"esbuild": "0.28.0",
+		"@types/node": "^26.2.0",
+		"@vitest/coverage-v8": "^4.1.11",
+		"esbuild": "0.28.2",
 		"eslint-plugin-obsidianmd": "0.3.0",
-		"globals": "17.6.0",
+		"globals": "17.11.0",
 		"jiti": "2.7.0",
 		"tslib": "2.8.1",
 		"typescript": "^6.0.3",
-		"typescript-eslint": "8.60.0",
+		"typescript-eslint": "8.67.0",
 		"vitest": "^4.1.7"
 	},
 	"dependencies": {
