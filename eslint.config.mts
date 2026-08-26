@@ -33,5 +33,8 @@ export default tseslint.config(
 		"main.js",
 		"__tests__",
 		"vitest.config.ts",
+		// JSON config files have no TS type info; obsidianmd typed rules crash
+		// on them at rule-load time (cannot be fixed by a files-block override).
+		"**/*.json",
 	]),
 );
