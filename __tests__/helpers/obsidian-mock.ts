@@ -162,7 +162,28 @@ export class PluginSettingTab {
   constructor(app: App, plugin: Plugin) {
     this.app = app;
     this.plugin = plugin;
-    this.containerEl = document.createElement("div");
+    // Guard against the missing DOM globals in a Node test environment.
+    this.containerEl =
+      typeof document !== "undefined" && typeof document.createElement === "function"
+        ? document.createElement("div")
+        : ({ tagName: "DIV" } as unknown as HTMLElement);
+  }
+
+  // Declarative (Obsidian 1.13.0) API stubs — overridden by subclasses.
+  getSettingDefinitions(): unknown[] {
+    return [];
+  }
+
+  getControlValue(_key: string): unknown {
+    return undefined;
+  }
+
+  setControlValue(_key: string, _value: unknown): void {
+    // no-op
+  }
+
+  update(): void {
+    // no-op
   }
 
   display(): void {
