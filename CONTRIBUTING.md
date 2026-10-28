@@ -46,7 +46,17 @@ npm install
 
 ## Releasing
 
-Releases are cut by tag push. Version lives in **three** files that must stay in sync — `package.json`, `manifest.json`, and `versions.json` (the release tag must match `manifest.json` exactly, **no `v` prefix**). Release assets are uploaded and SLSA-attested by `.github/workflows/release.yml`.
+Releases are cut by tag push. Version lives in **three** files that must stay in sync — `package.json`, `manifest.json`, and `versions.json` (the release tag must match `manifest.json` exactly, **no `v` prefix**).
+
+**Release sequence:**
+1. Bump `package.json`, `manifest.json`, and `versions.json` to the new version.
+2. Run `npm run build` to generate `main.js` and update `manifest.json`.
+3. Commit the version bumps (note: `main.js` is gitignored, but must be built locally for the release).
+4. **Create the GitHub release first**: `gh release create X.Y.Z --title X.Y.Z --notes "..."` (the workflow only uploads and attests assets; it does not create the release).
+5. Create and push the tag: `git tag X.Y.Z && git push origin X.Y.Z`. The tag push triggers `.github/workflows/release.yml` which uploads `main.js` and `manifest.json` and SLSA-attests them.
+6. If the workflow fails on first run (release upload fails because release wasn't created), re-run it after creating the release.
+
+Assets are uploaded and SLSA-attested by `.github/workflows/release.yml`.
 
 ## Creating an issue
 
