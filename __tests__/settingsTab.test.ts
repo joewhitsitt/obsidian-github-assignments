@@ -103,7 +103,7 @@ describe("GitHubAssignmentsSettingTab (declarative)", () => {
       expect(token).toBeDefined();
 
       const tokenDef = (tab.getSettingDefinitions() as any[])[0];
-      expect(tokenDef.control?.placeholder).toBe("Ghp_...");
+      expect(tokenDef.control?.placeholder).toBe("ghp_...");
     });
   });
 

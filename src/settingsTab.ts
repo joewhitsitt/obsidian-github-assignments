@@ -16,7 +16,7 @@ export class GitHubAssignmentsSettingTab extends PluginSettingTab {
       {
         name: "GitHub token",
         desc: "Create a personal access token at https://github.com/settings/tokens",
-        control: { type: "text", key: "githubToken", placeholder: "Ghp_..." },
+        control: { type: "text", key: "githubToken", placeholder: "ghp_..." },
       },
       {
         name: "GitHub username",

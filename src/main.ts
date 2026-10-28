@@ -62,15 +62,22 @@ export default class GitHubAssignmentsPlugin extends Plugin {
 
       await this.insertTasks(activeFile, items);
       new Notice(`Added ${items.length} assignments.`);
-    } catch (error) {
-      console.error("Error syncing assignments:", error);
+    } catch {
+      console.error("Error syncing assignments");
       new Notice("Error fetching assignments. Check your token and username.");
     }
   }
 
   async fetchAssignments(): Promise<GitHubItem[]> {
+    // Sanitize username to prevent injection
+    const sanitizedUsername = this.settings.username.replace(/[^a-zA-Z0-9-]/g, "");
+    
+    if (!sanitizedUsername) {
+      throw new Error("Invalid or missing GitHub username");
+    }
+    
     const queries: string[] = [
-      `assignee:${this.settings.username} is:open`,
+      `assignee:${sanitizedUsername} is:open`,
     ];
 
     if (this.settings.includeReviewRequested) {
@@ -96,8 +103,8 @@ export default class GitHubAssignmentsPlugin extends Plugin {
 
   private async runSearchQuery(query: string): Promise<GitHubItem[]> {
     const graphqlQuery = `
-      query {
-        search(query: "${query}", type: ISSUE, first: 50) {
+      query($searchQuery: String!) {
+        search(query: $searchQuery, type: ISSUE, first: 50) {
           nodes {
             ... on Issue {
               id
@@ -133,7 +140,10 @@ export default class GitHubAssignmentsPlugin extends Plugin {
         Authorization: `Bearer ${this.settings.githubToken}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ query: graphqlQuery }),
+      body: JSON.stringify({ 
+        query: graphqlQuery,
+        variables: { searchQuery: query }
+      }),
     });
 
     const json = JSON.parse(response.text) as GraphQLResponse;
@@ -168,7 +178,14 @@ export default class GitHubAssignmentsPlugin extends Plugin {
       if (item.__typename === "Issue" && !this.settings.includeIssues) return false;
       if (item.__typename === "PullRequest" && !this.settings.includePullRequests) return false;
       if (this.settings.includeRepos.trim()) {
-        const allowedRepos = this.settings.includeRepos.split(",").map((r) => r.trim().toLowerCase());
+        const allowedRepos = this.settings.includeRepos
+          .split(",")
+          .map((r) => r.trim().toLowerCase())
+          .filter((r) => /^[a-z0-9._-]+\/[a-z0-9._-]+$/.test(r));
+        if (allowedRepos.length === 0) {
+          // If filter is set but all entries are invalid, don't filter (fail open)
+          return true;
+        }
         if (!allowedRepos.includes(item.repository.nameWithOwner.toLowerCase())) return false;
       }
       return true;
