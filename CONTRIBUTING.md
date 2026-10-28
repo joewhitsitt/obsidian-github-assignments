@@ -46,7 +46,30 @@ npm install
 
 ## Releasing
 
-Releases are cut by tag push. Version lives in **three** files that must stay in sync — `package.json`, `manifest.json`, and `versions.json` (the release tag must match `manifest.json` exactly, **no `v` prefix**). Release assets are uploaded and SLSA-attested by `.github/workflows/release.yml`.
+Version lives in **three** files that must stay in sync — `package.json`, `manifest.json`, and `versions.json` (the release tag must match `manifest.json` exactly, **no `v` prefix**).
+
+**Release sequence:**
+1. Bump `package.json`, `manifest.json`, and `versions.json` to the new version.
+2. Run `npm run build` to generate `main.js` and `manifest.json`.
+3. Land the version bump on `main` through a pull request (direct pushes are blocked by the [repository rules](https://github.com/joewhitsitt/obsidian-github-assignments/rules)).
+4. Create and push the tag: `git tag X.Y.Z && git push origin X.Y.Z`.
+
+The tag push triggers `.github/workflows/release.yml`, which:
+
+- creates the release as a **draft** if it does not already exist (with generated notes),
+- uploads `main.js` and `manifest.json` as release assets,
+- SLSA-attests both assets and verifies the attestations,
+- publishes the release as the final step.
+
+Publishing last means a failed upload or attestation leaves an invisible draft rather than a public release with missing assets. If the workflow fails, fix the cause and re-run the failed jobs — re-runs are safe: release creation is skipped when the release exists, and asset uploads use `--clobber`.
+
+To replace the generated notes with hand-written ones after publishing:
+
+```bash
+gh release edit X.Y.Z --notes-file path/to/notes.md
+```
+
+Workflow action versions are pinned to the latest major and updated weekly by Dependabot. CI runs on `ubuntu-24.04` explicitly rather than `ubuntu-latest` so the image does not change underneath the release build when GitHub rotates the `-latest` label.
 
 ## Creating an issue
 

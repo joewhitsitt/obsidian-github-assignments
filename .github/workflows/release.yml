@@ -7,7 +7,10 @@ on:
 
 jobs:
     release:
-        runs-on: ubuntu-latest
+        # Pinned instead of ubuntu-latest: ubuntu-latest moves to Ubuntu 26 in
+        # Oct 2026 (actions/runner-images#14748), which would change the image
+        # under us without review.
+        runs-on: ubuntu-24.04
 
         permissions:
             contents: write
@@ -15,13 +18,26 @@ jobs:
             attestations: write
 
         steps:
-            - uses: actions/checkout@v4
-            - uses: actions/setup-node@v4
+            - uses: actions/checkout@v7
+            - uses: actions/setup-node@v7
               with:
                   node-version: "20.x"
                   cache: "npm"
             - run: npm ci
             - run: npm run build
+
+            # The release is created here (as a draft) so a tag push alone is
+            # enough to cut a release. It is published only after the assets
+            # are uploaded and attested, so a half-finished run never leaves a
+            # release with missing assets visible to the community scanner.
+            - name: Ensure draft release exists
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  tag="${GITHUB_REF#refs/tags/}"
+                  if ! gh release view "$tag" >/dev/null 2>&1; then
+                    gh release create "$tag" --draft --verify-tag --generate-notes
+                  fi
 
             - name: Upload release assets
               env:
@@ -31,13 +47,13 @@ jobs:
                   gh release upload "$tag" main.js manifest.json --clobber
 
             - name: Attest main.js
-              uses: actions/attest-build-provenance@v1
+              uses: actions/attest-build-provenance@v4
               with:
                   subject-path: "${{ github.workspace }}/main.js"
                   subject-name: main.js
 
             - name: Attest manifest.json
-              uses: actions/attest-build-provenance@v1
+              uses: actions/attest-build-provenance@v4
               with:
                   subject-path: "${{ github.workspace }}/manifest.json"
                   subject-name: manifest.json
@@ -48,3 +64,13 @@ jobs:
               run: |
                   gh attestation verify main.js --repo "${{ github.repository }}"
                   gh attestation verify manifest.json --repo "${{ github.repository }}"
+
+            # Publish last. Draft releases are not returned by
+            # /releases/tags/{tag}, so resolve the id first.
+            - name: Publish release
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  tag="${GITHUB_REF#refs/tags/}"
+                  id="$(gh release view "$tag" --json databaseId --jq .databaseId)"
+                  gh api --method PATCH "repos/${GITHUB_REPOSITORY}/releases/${id}" -F draft=false >/dev/null

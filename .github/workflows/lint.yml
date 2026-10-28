@@ -8,7 +8,10 @@ on:
 
 jobs:
     build:
-        runs-on: ubuntu-latest
+        # Pinned instead of ubuntu-latest: ubuntu-latest moves to Ubuntu 26 in
+        # Oct 2026 (actions/runner-images#14748), which would change the image
+        # under us without review.
+        runs-on: ubuntu-24.04
 
         strategy:
             matrix:
@@ -16,9 +19,9 @@ jobs:
                 # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v7
             - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v7
               with:
                   node-version: ${{ matrix.node-version }}
                   cache: "npm"
