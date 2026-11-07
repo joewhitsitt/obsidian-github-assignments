@@ -17,7 +17,7 @@
 	"devDependencies": {
 		"@eslint/js": "10.0.1",
 		"@types/node": "^26.6.5",
-		"@vitest/coverage-v8": "^5.0.5",
+		"@vitest/coverage-v8": "^5.1.0",
 		"esbuild": "0.28.2",
 		"eslint-plugin-obsidianmd": "0.4.2",
 		"globals": "17.13.0",
